@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
      "README.rdoc",
      "Rakefile",
      "VERSION",
+     "conductor.gemspec",
      "lib/conductor.rb",
      "test/helper.rb",
      "test/test_conductor.rb"
