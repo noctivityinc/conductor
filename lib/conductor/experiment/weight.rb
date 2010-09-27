@@ -10,6 +10,6 @@
 #  updated_at  :datetime
 #
 
-class Conductor::WeightedExperiment < ActiveRecord::Base
+class Conductor::Experiment::Weight < ActiveRecord::Base
   set_table_name "conductor_weighted_experiments"
 end

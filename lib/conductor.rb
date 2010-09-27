@@ -1,6 +1,9 @@
 require 'conductor/experiment'
 require 'conductor/roll_up'
 require 'conductor/weights'
+require 'conductor/experiment/raw'
+require 'conductor/experiment/daily'
+require 'conductor/experiment/weight'
 
 class Conductor
   MAX_WEIGHTING_FACTOR = 1.25

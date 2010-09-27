@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{conductor}
-  s.version = "0.2.9"
+  s.version = "0.2.13"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Noctivity"]
@@ -26,10 +26,10 @@ Gem::Specification.new do |s|
      "init.rb",
      "lib/conductor.rb",
      "lib/conductor/experiment.rb",
-     "lib/conductor/models/daily_experiment.rb",
-     "lib/conductor/models/raw_experiment.rb",
-     "lib/conductor/models/weight_history.rb",
-     "lib/conductor/models/weighted_experiment.rb",
+     "lib/conductor/experiment/daily.rb",
+     "lib/conductor/experiment/history.rb",
+     "lib/conductor/experiment/raw.rb",
+     "lib/conductor/experiment/weight.rb",
      "lib/conductor/roll_up.rb",
      "lib/conductor/weights.rb"
   ]

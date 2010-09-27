@@ -11,7 +11,7 @@
 #  updated_at       :datetime
 #
 
-class Conductor::RawExperiment < ActiveRecord::Base
+class Conductor::Experiment::Raw < ActiveRecord::Base
   set_table_name "conductor_raw_experiments"
   
   validates_presence_of :group_name, :option_name
