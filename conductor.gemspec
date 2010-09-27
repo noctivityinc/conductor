@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{conductor}
-  s.version = "0.2.13"
+  s.version = "0.2.14"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Noctivity"]
@@ -21,8 +21,8 @@ Gem::Specification.new do |s|
      "README.rdoc",
      "Rakefile",
      "VERSION",
-     "generators/cmig/cmig_generator.rb",
-     "generators/cmig/templates/migration.rb",
+     "generators/conductor_migration/conductor_migration_generator.rb",
+     "generators/conductor_migration/templates/migration.rb",
      "init.rb",
      "lib/conductor.rb",
      "lib/conductor/experiment.rb",
