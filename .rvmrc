@@ -1,0 +1,5 @@
+if [[ -s "/Users/jlippiner/.rvm/environments/ruby-1.9.2-rc1@conductor" ]] ; then
+  . "/Users/jlippiner/.rvm/environments/ruby-1.9.2-rc1@conductor"
+else
+  rvm --create  "ruby-1.9.2-rc1@conductor"
+fi

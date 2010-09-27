@@ -7,6 +7,11 @@ class Conductor
   MINIMUM_LAUNCH_DAYS = 7
   DBG = false
 
+  @@VERSION = "0.1.0"
+  @@MAJOR_VERSION = "1.0"
+  cattr_reader :VERSION
+  cattr_reader :MAJOR_VERSION
+
   cattr_writer :cache
 
   def self.cache
