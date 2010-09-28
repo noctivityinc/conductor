@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{conductor}
-  s.version = "0.2.16"
+  s.version = "0.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Noctivity"]
@@ -40,8 +40,9 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.7}
   s.summary = %q{lets you just try things while always maximizing towards a goal (e.g. purchase, signups, etc)}
   s.test_files = [
-    "test/helper.rb",
-     "test/test_conductor.rb"
+    "test/db/schema.rb",
+     "test/test_conductor.rb",
+     "test/test_helper.rb"
   ]
 
   if s.respond_to? :specification_version then
