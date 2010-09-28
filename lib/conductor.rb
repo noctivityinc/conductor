@@ -4,6 +4,7 @@ require 'conductor/weights'
 require 'conductor/experiment/raw'
 require 'conductor/experiment/daily'
 require 'conductor/experiment/weight'
+require 'conductor/experiment/history'
 
 class Conductor
   MAX_WEIGHTING_FACTOR = 1.25
@@ -34,6 +35,14 @@ class Conductor
       puts msg if DBG
     end
   end
+  
+  # class Rails
+  #    cattr_writer :cache
+  # 
+  #    def self.cache
+  #      []
+  #    end
+  #  end
 end
 
 

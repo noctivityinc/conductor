@@ -14,7 +14,7 @@
 class Conductor::Experiment::Raw < ActiveRecord::Base
   set_table_name "conductor_raw_experiments"
   
-  validates_presence_of :group_name, :option_name
+  validates_presence_of :group_name, :alternative
   
   def created_date
     self.created_at.strftime('%Y-%m-%d')

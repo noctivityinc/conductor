@@ -1,7 +1,7 @@
 class Conductor
   class Experiment
     class << self
-      # Selects the best option for a given group
+      # Selects the best alternative for a given group
       #
       # Method also saves the selection to the
       # database so everything happens in one move
@@ -25,8 +25,8 @@ class Conductor
         selection = Conductor.cache.read("Conductor::#{Conductor.identity}::Experience::#{group_name}")
 
         unless selection
-          selection = select_option_for_group(group_name, alternatives)
-          Conductor::RawExperiment.create!({:identity_id => Conductor.identity.to_s, :group_name => group_name, :option_name => selection}.merge!(options))
+          selection = select_alternative_for_group(group_name, alternatives)
+          Conductor::Experiment::Raw.create!({:identity_id => Conductor.identity.to_s, :group_name => group_name, :alternative => selection}.merge!(options))
           Conductor.cache.write("Conductor::#{Conductor.identity}::Experience::#{group_name}", selection)
         end
 
@@ -69,13 +69,13 @@ class Conductor
       #
       def track!(options={})
         value = (options.delete(:value) || 1) # => pull the conversion value and remove from hash or set value to 1
-        experiments = Conductor::RawExperiment.find(:all, :conditions => {:identity_id => Conductor.identity}.merge!(options))
+        experiments = Conductor::Experiment::Raw.find(:all, :conditions => {:identity_id => Conductor.identity}.merge!(options))
         experiments.each {|x| x.update_attributes(:conversion_value => value)} if experiments
       end
 
       private
 
-        def select_option_for_group(group_name, alternatives)
+        def select_alternative_for_group(group_name, alternatives)
           # create weighting table
           weighting_table = generate_weighting_table(group_name, alternatives)
 
@@ -88,26 +88,26 @@ class Conductor
         #
         # Note: We create sql where statement that includes the list of
         # alternatives to select from in case an existing group
-        # has an option you no longer want to include in the result set
+        # has an alternative you no longer want to include in the result set
         #
         # TODO: store all weights for a group in cache and then weed out 
         # those not in the alternatives list
         #
         def generate_weighting_table(group_name, alternatives)
           # create the conditions after sanitizing sql.
-          option_conditions = alternatives.inject([]) {|res,x| res << "option_name = '#{sanitize(x)}'"}.join(' OR ')
+          alternative_filter = alternatives.inject([]) {|res,x| res << "alternative = '#{sanitize(x)}'"}.join(' OR ')
 
-          conditions = "group_name = '#{group_name}' AND (#{option_conditions})"
+          conditions = "group_name = '#{group_name}' AND (#{alternative_filter})"
 
-          # get the options from the database
-          weights ||= Conductor::WeightedExperiment.find(:all, :conditions => conditions)
+          # get the alternatives from the database
+          weights ||= Conductor::Experiment::Weight.find(:all, :conditions => conditions)
 
           # create selection hash
-          weighting_table = weights.inject({}) {|res, x| res.merge!({x.option_name => x.weight})}
+          weighting_table = weights.inject({}) {|res, x| res.merge!({x.alternative => x.weight})}
 
           # is anything missing?
-          options_names = weights.map(&:option_name)
-          missing = alternatives - options_names
+          alternative_names = weights.map(&:alternative)
+          missing = alternatives - alternative_names
 
           # if anything is missing, add it to the weighted list
           unless missing.empty?
@@ -126,7 +126,7 @@ class Conductor
           return (rand*width)+start_num
         end
 
-        # choose a random option based on weights
+        # choose a random alternative based on weights
         # from recipe 5.11 in ruby cookbook
         def choose_weighted(weighted)
           sum = weighted.inject(0) do |sum, item_and_weight|
