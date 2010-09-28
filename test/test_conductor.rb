@@ -17,6 +17,12 @@ class TestConductor < Test::Unit::TestCase
       assert ["a", "b", "c"].include? selected
     end
 
+    should "use the cache if working" do
+      Conductor.cache.write('testing','value')
+      x = Conductor.cache.read('testing')
+      assert_equal x, 'value'
+    end
+
     should "almost equally select each option if no weights exist" do
       a = 0
       b = 0
@@ -109,6 +115,7 @@ class TestConductor < Test::Unit::TestCase
     setup do
       seed_raw_data(100)
       Conductor::RollUp.process
+      Conductor.identity = ActiveSupport::SecureRandom.hex(16)
     end
 
     should "correctly RollUp daily data" do
@@ -117,9 +124,39 @@ class TestConductor < Test::Unit::TestCase
       assert Conductor::Experiment::Daily.all.detect {|x| x.views > 0}
       assert Conductor::Experiment::Daily.all.detect {|x| x.conversion_value > 0}
     end
+    
+    should "correctly populate weighting table when selecting a value" do
+      selected = Conductor::Experiment.pick('a_group', ["a", "b", "c"])
+      assert_equal 3, Conductor::Experiment::Weight.count
+    end
 
-    should "correctly populate weighting table" do
-      Conductor::Weights.compute
+    should "pull weights from the cache" do
+      Conductor::Experiment.pick('a_group', ["a", "b", "c"])
+      
+      (1..100).each do |x|
+        Conductor.identity = ActiveSupport::SecureRandom.hex(16)
+        Conductor::Experiment.pick('a_group', ["a", "b", "c"])
+      end
+      
+      # => if this works the history table should have only been updated one time not 101 so there should 
+      # => be three records (one for a, b and c)
+      assert_equal 3, Conductor::Experiment::History.count
+    end
+    
+    should "pull weights from the cache and then recreate weights when the alternative list changes" do
+      Conductor::Experiment.pick('a_group', ["a", "b", "c"])
+      
+      (1..100).each do |x|
+        Conductor.identity = ActiveSupport::SecureRandom.hex(16)
+        Conductor::Experiment.pick('a_group', ["a", "b", "c"])
+      end
+
+      Conductor.identity = ActiveSupport::SecureRandom.hex(16)      
+      Conductor::Experiment.pick('a_group', ["a", "c"])
+      
+      # => if this works the history table should have only been updated one time not 101 so there should 
+      # => be FIVE records (one for a, b and c and then one for a and c)
+      assert_equal 5, Conductor::Experiment::History.count
     end
   end
 
@@ -130,8 +167,9 @@ class TestConductor < Test::Unit::TestCase
       # rollup
       Conductor::RollUp.process
 
-      # compute weights
-      Conductor::Weights.compute
+      # hit after rollup to populare weight table
+      Conductor.identity = ActiveSupport::SecureRandom.hex(16)
+      selected = Conductor::Experiment.pick('a_group', ["a", "b", "c"])
 
       # this makes the following assumptions:
       # MINIMUM_LAUNCH_DAYS = 7
@@ -147,8 +185,9 @@ class TestConductor < Test::Unit::TestCase
       # rollup
       Conductor::RollUp.process
 
-      # compute weights
-      Conductor::Weights.compute
+      # hit after rollup to populare weight table
+      Conductor.identity = ActiveSupport::SecureRandom.hex(16)
+      selected = Conductor::Experiment.pick('a_group', ["a", "b", "c"])
     end
 
     should "populate the weighting table with different weights" do
@@ -161,14 +200,6 @@ class TestConductor < Test::Unit::TestCase
     end
 
     should "return a weight 1.25 times higher than the highest weight for a newly launched and non-recorded alernative" do
-      seed_raw_data(100, 14)
-
-      # rollup
-      Conductor::RollUp.process
-
-      # compute weights
-      Conductor::Weights.compute
-
       # get the highest weight
       max_weight = Conductor::Experiment::Weight.maximum(:weight)
 
@@ -186,15 +217,14 @@ class TestConductor < Test::Unit::TestCase
       # rollup
       Conductor::RollUp.process
 
-      # compute weights
-      Conductor::Weights.compute
+      # hit after rollup to populare weight table
+      Conductor.identity = ActiveSupport::SecureRandom.hex(16)
+      selected = Conductor::Experiment.pick('a_group', ["a", "b", "c"])
 
       # make sure that launch_window values can be detected
       assert_not_nil Conductor::Experiment::History.find(:all, :conditions => 'launch_window > 0')
     end
   end
-
-
 
 
   private

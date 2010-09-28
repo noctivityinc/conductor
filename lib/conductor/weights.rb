@@ -1,11 +1,38 @@
 class Conductor
   class Weights
     class << self
-      def compute
-        Conductor::Experiment::Weight.delete_all # => remove all old data
 
-        # loop through each group and determing weight of alternatives
-        Conductor::Experiment::Daily.since(14.days.ago).group_by(&:group_name).each do |group_name, group_rows|
+      # Returns all the weights for a given group.  In the event that the alternatives specified for the
+      # group do not match all the alternatives previously computed for the group, new weights are
+      # generated.  The cache is used to speed up this check
+      def find_or_create(group_name, alternatives)
+        weights_for_group = Conductor.cache.read("Conductor::Experiment::#{group_name}::Alternatives")
+
+        alternatives_array = weights_for_group.map(&:alternative).sort if weights_for_group
+        if alternatives_array.eql?(alternatives.sort)
+          Conductor.log('alternatives equal to cache')
+          return weights_for_group
+        else
+          # Conductor.log('alternatives NOT equal to cache.  Need to recompute')
+          compute(group_name, alternatives)
+
+          # get the new weights
+          weights_for_group = Conductor::Experiment::Weight.find(:all, :conditions => "group_name = '#{group_name}'")
+          Conductor.cache.delete("Conductor::Experiment::#{group_name}::Alternatives")
+          Conductor.cache.write("Conductor::Experiment::#{group_name}::Alternatives", weights_for_group)
+          return weights_for_group
+        end
+      end
+
+      def compute(group_name, alternatives)
+        # create the conditions after sanitizing sql.
+        alternative_filter = alternatives.inject([]) {|res,x| res << "alternative = '#{Conductor.sanitize(x)}'"}.join(' OR ')
+
+        # pull daily data and recompute if daily data
+        group_rows = Conductor::Experiment::Daily.since(14.days.ago).for_group(group_name).find(:all, :conditions => alternative_filter)
+
+        unless group_rows.empty?
+          Conductor::Experiment::Weight.delete_all(:group_name => group_name) # => remove all old data for group
           total = group_rows.sum_it(:conversion_value)
           data = total ? compute_weights_for_group(group_name, group_rows, total) : assign_equal_weights(group_rows)
           update_weights_in_db(group_name, data)
@@ -17,8 +44,6 @@ class Conductor
         # loops through all the alternatives for a given group and computes the weights for
         # each alternative
         def compute_weights_for_group(group_name, group_rows, total)
-          Conductor.log('compute_weights_for_group')
-
           data = []
           recently_launched = []
           max_weight = 0

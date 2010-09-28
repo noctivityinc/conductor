@@ -19,7 +19,7 @@ class Conductor
       # specific goal.
       #
       def pick(group_name, alternatives, options={})
-        group_name = sanitize(group_name) # => clean up and standardize
+        group_name = Conductor.sanitize(group_name) # => clean up and standardize
 
         # check for previous selection
         selection = Conductor.cache.read("Conductor::#{Conductor.identity}::Experience::#{group_name}")
@@ -35,7 +35,7 @@ class Conductor
 
       # returns the raw weighting table for all alternatives for a specified group
       def weights(group_name, alternatives)
-        group_name = sanitize(group_name) # => clean up and standardize
+        group_name = Conductor.sanitize(group_name) # => clean up and standardize
         return generate_weighting_table(group_name, alternatives)
       end
 
@@ -94,14 +94,8 @@ class Conductor
         # those not in the alternatives list
         #
         def generate_weighting_table(group_name, alternatives)
-          # create the conditions after sanitizing sql.
-          alternative_filter = alternatives.inject([]) {|res,x| res << "alternative = '#{sanitize(x)}'"}.join(' OR ')
-
-          conditions = "group_name = '#{group_name}' AND (#{alternative_filter})"
-
-          # get the alternatives from the database
-          weights ||= Conductor::Experiment::Weight.find(:all, :conditions => conditions)
-
+          weights = Conductor::Weights.find_or_create(group_name, alternatives)
+          
           # create selection hash
           weighting_table = weights.inject({}) {|res, x| res.merge!({x.alternative => x.weight})}
 
@@ -119,7 +113,7 @@ class Conductor
 
           return weighting_table
         end
-
+        
         # selects a random float
         def float_rand(start_num, end_num=0)
           width = end_num-start_num
@@ -146,11 +140,6 @@ class Conductor
           sum = sum.to_f
           weighted.each { |item, weight| weighted[item] = weight/sum }
         end
-
-        def sanitize(str)
-          str.gsub(/\s/,'_').downcase
-        end
-
     end
   end
 end
