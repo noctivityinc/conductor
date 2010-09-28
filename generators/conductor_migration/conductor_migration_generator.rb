@@ -3,8 +3,7 @@ class ConductorMigrationGenerator < Rails::Generator::Base
   
   def manifest
     record do |m|
-      m.migration_template 'conductor_migration.rb', 'db/migrate', 
-        :assigns => {:version => Conductor.MAJOR_VERSION.gsub(".", "")}
+      m.migration_template 'migration.rb', 'db/migrate', :migration_file_name => "conductor_migration"
     end
   end
 end

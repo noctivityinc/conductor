@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{conductor}
-  s.version = "0.2.9"
+  s.version = "0.4.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Noctivity"]
-  s.date = %q{2010-09-27}
+  s.date = %q{2010-09-28}
   s.description = %q{Conductor is the bastard child of a/b testing and personalization.  It throws everything you know about creating a web site our the window and lets you just "try stuff" without ever having to worry about not maximing your site's "purpose."  Have a new landing page?  Just throw it to the conductor.  Want to try different price points - conductor.  Different form designs?  Conductor.  Conductor will rotate all alternatives through the mix and eventually settle on the top performing of all, without you having to do anything other than just creating.  Think "intelligent A/B testing" on steriods.}
   s.email = %q{jlippiner@noctivity.com}
   s.extra_rdoc_files = [
@@ -22,16 +22,17 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION",
      "generators/conductor_migration/conductor_migration_generator.rb",
-     "generators/conductor_migration/templates/conductor_migration.rb",
+     "generators/conductor_migration/templates/migration.rb",
      "init.rb",
      "lib/conductor.rb",
      "lib/conductor/experiment.rb",
-     "lib/conductor/models/daily_experiment.rb",
-     "lib/conductor/models/raw_experiment.rb",
-     "lib/conductor/models/weight_history.rb",
-     "lib/conductor/models/weighted_experiment.rb",
+     "lib/conductor/experiment/daily.rb",
+     "lib/conductor/experiment/history.rb",
+     "lib/conductor/experiment/raw.rb",
+     "lib/conductor/experiment/weight.rb",
      "lib/conductor/roll_up.rb",
-     "lib/conductor/weights.rb"
+     "lib/conductor/weights.rb",
+     "tasks/conductor.rake"
   ]
   s.homepage = %q{http://github.com/noctivityinc/conductor}
   s.rdoc_options = ["--charset=UTF-8"]
@@ -40,8 +41,9 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.7}
   s.summary = %q{lets you just try things while always maximizing towards a goal (e.g. purchase, signups, etc)}
   s.test_files = [
-    "test/helper.rb",
-     "test/test_conductor.rb"
+    "test/db/schema.rb",
+     "test/test_conductor.rb",
+     "test/test_helper.rb"
   ]
 
   if s.respond_to? :specification_version then

@@ -11,7 +11,9 @@
 #  conversions      :integer
 #
 
-class Conductor::DailyExperiment < ActiveRecord::Base
+class Conductor::Experiment::Daily < ActiveRecord::Base
   set_table_name "conductor_daily_experiments"
   named_scope :since, lambda { |a_date| { :conditions =>  ['activity_date >= ?',a_date] }}
+  named_scope :for_group, lambda { |group_name| { :conditions =>  ['group_name = ?',group_name] }}
+  
 end

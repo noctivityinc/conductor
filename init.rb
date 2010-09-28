@@ -1,4 +1,2 @@
-require File.dirname(__FILE__) + '/lib/conductor/models'
+require File.join(File.dirname(__FILE__), 'rails', 'init')
 
-# ActionController::Base.send :include, AbingoSugar
-# ActionView::Base.send :include, AbingoViewHelper

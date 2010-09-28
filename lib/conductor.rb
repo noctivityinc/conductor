@@ -1,6 +1,10 @@
 require 'conductor/experiment'
 require 'conductor/roll_up'
 require 'conductor/weights'
+require 'conductor/experiment/raw'
+require 'conductor/experiment/daily'
+require 'conductor/experiment/weight'
+require 'conductor/experiment/history'
 
 class Conductor
   MAX_WEIGHTING_FACTOR = 1.25
@@ -30,7 +34,21 @@ class Conductor
     def log(msg)
       puts msg if DBG
     end
+    
+    def sanitize(str)
+      str.gsub(/\s/,'_').downcase
+    end
   end
+  
+  
+  
+  # class Rails
+  #    cattr_writer :cache
+  # 
+  #    def self.cache
+  #      []
+  #    end
+  #  end
 end
 
 

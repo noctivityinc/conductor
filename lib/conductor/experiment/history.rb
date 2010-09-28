@@ -9,6 +9,6 @@
 #  computed_at :datetime
 #
 
-class Conductor::WeightHistory < ActiveRecord::Base
+class Conductor::Experiment::History < ActiveRecord::Base
   set_table_name "conductor_weight_histories"
 end
