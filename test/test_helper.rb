@@ -17,7 +17,7 @@ require File.dirname(__FILE__) + '/../init.rb'
 
 
 config = YAML::load(IO.read(File.dirname(__FILE__) + '/db/database.yml'))
-ActiveRecord::Base.logger = Logger.new(File.dirname(__FILE__) + "/debug.log")
+# ActiveRecord::Base.logger = Logger.new(STDOUT) # Logger.new(File.dirname(__FILE__) + "/debug.log")
 ActiveRecord::Base.establish_connection(config[ENV['DB'] || 'postgresql'])
 ActiveRecord::Migration.verbose = false
 load(File.dirname(__FILE__) + "/db/schema.rb")

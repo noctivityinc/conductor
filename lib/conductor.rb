@@ -34,7 +34,13 @@ class Conductor
     def log(msg)
       puts msg if DBG
     end
+    
+    def sanitize(str)
+      str.gsub(/\s/,'_').downcase
+    end
   end
+  
+  
   
   # class Rails
   #    cattr_writer :cache

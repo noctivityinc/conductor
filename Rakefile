@@ -11,7 +11,7 @@ begin
     gem.homepage = "http://github.com/noctivityinc/conductor"
     gem.authors = ["Noctivity"]
     gem.rubyforge_project = "conductor"
-    gem.files =  FileList["[A-Z]*", "{generators,lib}/**/*", "init.rb"]
+    gem.files =  FileList["[A-Z]*", "{generators,lib,tasks}/**/*", "init.rb"]
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
@@ -52,3 +52,4 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
+

@@ -12,12 +12,15 @@ class Conductor
             views = alternatives.count
             conversions = alternatives.count {|x| !x.conversion_value.nil?}
             Conductor::Experiment::Daily.create!(:activity_date => day,
-                                         :group_name => group_name,
-                                         :alternative => alternative_name,
-                                         :conversion_value => conversion_value,
-                                         :views => views,
-                                         :conversions => conversions )
+                                                 :group_name => group_name,
+                                                 :alternative => alternative_name,
+                                                 :conversion_value => conversion_value,
+                                                 :views => views,
+                                                 :conversions => conversions )
           end
+          
+          # delete the cache for this group so it can be recreated with the new values
+          Conductor.cache.delete("Conductor::Experiment::#{group_name}::Alternatives")
         end
       end
     end

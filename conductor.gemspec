@@ -31,7 +31,8 @@ Gem::Specification.new do |s|
      "lib/conductor/experiment/raw.rb",
      "lib/conductor/experiment/weight.rb",
      "lib/conductor/roll_up.rb",
-     "lib/conductor/weights.rb"
+     "lib/conductor/weights.rb",
+     "tasks/conductor.rake"
   ]
   s.homepage = %q{http://github.com/noctivityinc/conductor}
   s.rdoc_options = ["--charset=UTF-8"]
