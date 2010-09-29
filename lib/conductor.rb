@@ -40,15 +40,6 @@ class Conductor
     end
   end
   
-  
-  
-  # class Rails
-  #    cattr_writer :cache
-  # 
-  #    def self.cache
-  #      []
-  #    end
-  #  end
 end
 
 

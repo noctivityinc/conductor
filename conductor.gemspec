@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{conductor}
-  s.version = "0.4.1"
+  s.version = "0.4.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Noctivity"]
@@ -32,7 +32,7 @@ Gem::Specification.new do |s|
      "lib/conductor/experiment/weight.rb",
      "lib/conductor/roll_up.rb",
      "lib/conductor/weights.rb",
-     "tasks/conductor.rake"
+     "lib/tasks/conductor.rake"
   ]
   s.homepage = %q{http://github.com/noctivityinc/conductor}
   s.rdoc_options = ["--charset=UTF-8"]
