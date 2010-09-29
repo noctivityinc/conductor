@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{conductor}
-  s.version = "0.4.2"
+  s.version = "0.5.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Noctivity"]
@@ -25,14 +25,15 @@ Gem::Specification.new do |s|
      "generators/conductor_migration/templates/migration.rb",
      "init.rb",
      "lib/conductor.rb",
+     "lib/conductor/controller/dashboard.rb",
      "lib/conductor/experiment.rb",
      "lib/conductor/experiment/daily.rb",
      "lib/conductor/experiment/history.rb",
      "lib/conductor/experiment/raw.rb",
      "lib/conductor/experiment/weight.rb",
      "lib/conductor/roll_up.rb",
-     "lib/conductor/weights.rb",
-     "lib/tasks/conductor.rake"
+     "lib/conductor/views/index.html.haml",
+     "lib/conductor/weights.rb"
   ]
   s.homepage = %q{http://github.com/noctivityinc/conductor}
   s.rdoc_options = ["--charset=UTF-8"]
