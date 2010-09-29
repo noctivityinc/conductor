@@ -51,7 +51,7 @@
                 %td.date
                   = row.computed_at
                   - if row.launch_window
-                    = "(#{launch_window} day(s) till hard launch)"
+                    = "(#{row.launch_window} day(s) till hard launch)"
                 %td.name= row.alternative
                 %td.weight= row.weight
             

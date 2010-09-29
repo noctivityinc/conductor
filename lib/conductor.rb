@@ -5,6 +5,7 @@ require 'conductor/experiment/raw'
 require 'conductor/experiment/daily'
 require 'conductor/experiment/weight'
 require 'conductor/experiment/history'
+require 'conductor/controller/dashboard'
 
 class Conductor
   MAX_WEIGHTING_FACTOR = 1.25
