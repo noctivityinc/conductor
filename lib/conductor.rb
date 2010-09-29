@@ -11,14 +11,6 @@ class Conductor
   MINIMUM_LAUNCH_DAYS = 7
   DBG = false
 
-  module Version
-    version = Gem::Specification.load(File.expand_path("../conductor.gemspec", File.dirname(__FILE__))).version.to_s.split(".").map { |i| i.to_i }
-    MAJOR = version[0]
-    MINOR = version[1]
-    PATCH = version[2]
-    STRING = "#{MAJOR}.#{MINOR}.#{PATCH}"
-  end
-
   cattr_writer :cache
 
   def self.cache
