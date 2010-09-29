@@ -8,6 +8,7 @@ class Conductor
         @weights = Conductor::Experiment::Weight.all
         @weight_history = Conductor::Experiment::History.all
         @dailies = Conductor::Experiment::Daily.all
+        render :template => 'dashboard/index'
       end
       
     end

@@ -1,7 +1,7 @@
 class Conductor
   class RollUp
     def self.process
-      Conductor::Experiment::Raw.all.group_by(&:created_date).each do |day, daily_rows|
+      Conductor::Experiment::Raw.since(14.days.ago).group_by(&:created_date).each do |day, daily_rows|
 
         # remove all the existing data for that day
         Conductor::Experiment::Daily.delete_all(:activity_date => day)
