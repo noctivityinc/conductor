@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{conductor}
-  s.version = "0.4.0"
+  s.version = "0.5.15"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Noctivity"]
-  s.date = %q{2010-09-28}
+  s.date = %q{2010-09-30}
   s.description = %q{Conductor is the bastard child of a/b testing and personalization.  It throws everything you know about creating a web site our the window and lets you just "try stuff" without ever having to worry about not maximing your site's "purpose."  Have a new landing page?  Just throw it to the conductor.  Want to try different price points - conductor.  Different form designs?  Conductor.  Conductor will rotate all alternatives through the mix and eventually settle on the top performing of all, without you having to do anything other than just creating.  Think "intelligent A/B testing" on steriods.}
   s.email = %q{jlippiner@noctivity.com}
   s.extra_rdoc_files = [
@@ -25,14 +25,15 @@ Gem::Specification.new do |s|
      "generators/conductor_migration/templates/migration.rb",
      "init.rb",
      "lib/conductor.rb",
+     "lib/conductor/controller/dashboard.rb",
      "lib/conductor/experiment.rb",
      "lib/conductor/experiment/daily.rb",
      "lib/conductor/experiment/history.rb",
      "lib/conductor/experiment/raw.rb",
      "lib/conductor/experiment/weight.rb",
      "lib/conductor/roll_up.rb",
-     "lib/conductor/weights.rb",
-     "tasks/conductor.rake"
+     "lib/conductor/views/dashboard/index.html.haml",
+     "lib/conductor/weights.rb"
   ]
   s.homepage = %q{http://github.com/noctivityinc/conductor}
   s.rdoc_options = ["--charset=UTF-8"]

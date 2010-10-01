@@ -1,0 +1,58 @@
+#conductor_dashboard
+  #weights
+    %h2 Current Experiment Weights
+    - @weights.group_by(&:group_name).each do |group_name, group|
+      .group
+        %fieldset
+          %legend= group_name
+          %table
+            %tr
+              %th Alternative
+              %th Weight
+            - group.each do |row|
+              %tr
+                %td.name= row.alternative
+                %td.weight= row.weight
+          
+  #dailies
+    %h2 Experiment Statistics
+    - @dailies.group_by(&:group_name).each do |group_name, group|
+      .group
+        %fieldset
+          %legend= group_name
+          %table
+            %tr
+              %th Date
+              %th Alternative
+              %th Views
+              %th Conversions
+              %th Value
+            - group.sort_by(&:activity_date).reverse.each do |row|
+              %tr
+                %td.date= row.activity_date
+                %td.name= row.alternative
+                %td.views= row.views
+                %td.conversions= row.conversions
+                %td.value= row.conversion_value
+            
+  #history
+    %h2 Experiment Weight History
+    - @weight_history.group_by(&:group_name).each do |group_name, group|
+      .group
+        %fieldset
+          %legend= group_name
+          %table
+            %tr
+              %th Date
+              %th Alternative
+              %th Weight
+            - group.sort_by(&:computed_at).reverse.each do |row|
+              %tr
+                %td.date
+                  = row.computed_at
+                  - if row.launch_window
+                    = "(#{row.launch_window} day(s) till hard launch)"
+                %td.name= row.alternative
+                %td.weight= row.weight
+            
+              
