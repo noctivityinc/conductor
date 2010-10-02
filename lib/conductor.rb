@@ -5,16 +5,14 @@ require 'conductor/experiment/raw'
 require 'conductor/experiment/daily'
 require 'conductor/experiment/weight'
 require 'conductor/experiment/history'
+require 'conductor/controller/dashboard'
+require 'conductor/helpers/dashboard_helper'
+
 
 class Conductor
   MAX_WEIGHTING_FACTOR = 1.25
   MINIMUM_LAUNCH_DAYS = 7
   DBG = false
-
-  @@VERSION = "0.1.0"
-  @@MAJOR_VERSION = "1.0"
-  cattr_reader :VERSION
-  cattr_reader :MAJOR_VERSION
 
   cattr_writer :cache
 
@@ -40,15 +38,6 @@ class Conductor
     end
   end
   
-  
-  
-  # class Rails
-  #    cattr_writer :cache
-  # 
-  #    def self.cache
-  #      []
-  #    end
-  #  end
 end
 
 

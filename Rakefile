@@ -11,7 +11,9 @@ begin
     gem.homepage = "http://github.com/noctivityinc/conductor"
     gem.authors = ["Noctivity"]
     gem.rubyforge_project = "conductor"
-    gem.files =  FileList["[A-Z]*", "{generators,lib,tasks}/**/*", "init.rb"]
+    gem.files =  FileList["[A-Z]*", "{generators,lib,tasks,rails}/**/*", "init.rb"]
+    gem.add_dependency 'googlecharts'
+    gem.add_dependency 'haml'
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new

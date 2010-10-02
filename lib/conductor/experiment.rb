@@ -69,7 +69,7 @@ class Conductor
       #
       def track!(options={})
         value = (options.delete(:value) || 1) # => pull the conversion value and remove from hash or set value to 1
-        experiments = Conductor::Experiment::Raw.find(:all, :conditions => {:identity_id => Conductor.identity}.merge!(options))
+        experiments = Conductor::Experiment::Raw.find(:all, :conditions => {:identity_id => Conductor.identity.to_s}.merge!(options))
         experiments.each {|x| x.update_attributes(:conversion_value => value)} if experiments
       end
 
