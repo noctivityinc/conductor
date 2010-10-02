@@ -1,0 +1,16 @@
+%a{:name => "current_weights"}
+%h2 Current Experiment Weights
+- @weights.group_by(&:group_name).each do |group_name, group|
+  .group
+    %fieldset
+      %legend= group_name
+      = image_tag current_weights(group_name, group)
+      .toggle_table (table)
+      %table
+        %tr
+          %th Alternative
+          %th Weight
+        - group.each do |row|
+          %tr
+            %td.name= row.alternative
+            %td.weight= row.weight
