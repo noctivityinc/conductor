@@ -22,6 +22,15 @@ class TestConductor < Test::Unit::TestCase
       x = Conductor.cache.read('testing')
       assert_equal x, 'value'
     end
+    
+    should "allow for the minimum_launch_days to be configurable" do
+      Conductor.days_till_weighting = 3
+      assert_equal(3, Conductor.minimum_launch_days)
+    end
+    
+    should "raise an error if an improper attribute is specified for @@attribute_for_weighting" do
+      assert_raise(RuntimeError, LoadError) { Conductor.attribute_for_weighting = :random}
+    end
 
     should "almost equally select each option if no weights exist" do
       a = 0
@@ -169,11 +178,11 @@ class TestConductor < Test::Unit::TestCase
 
       # hit after rollup to populare weight table
       Conductor.identity = ActiveSupport::SecureRandom.hex(16)
+      Conductor.days_till_weighting = 7
       selected = Conductor::Experiment.pick('a_group', ["a", "b", "c"])
 
-      # this makes the following assumptions:
-      # MINIMUM_LAUNCH_DAYS = 7
       # each weight will be equal to 0.18
+      assert_equal 7, Conductor.minimum_launch_days
       assert_equal 0.54, Conductor::Experiment::Weight.all.sum_it(:weight).to_f
     end
   end
@@ -225,6 +234,30 @@ class TestConductor < Test::Unit::TestCase
       assert_not_nil Conductor::Experiment::History.find(:all, :conditions => 'launch_window > 0')
     end
   end
+  
+  context "conductor" do
+    setup do
+      seed_raw_data(500, 30)
+
+      # rollup
+      Conductor::RollUp.process
+    end
+    
+    should "allow for the number of conversions to be used for weighting instead of conversion_value" do
+      Conductor.identity = ActiveSupport::SecureRandom.hex(16)
+      Conductor::Experiment.pick('a_group', ["a", "b", "c"])
+      weights_cv = Conductor::Experiment::Weight.all.map(&:weight).sort
+
+      Conductor.identity = ActiveSupport::SecureRandom.hex(16)
+      Conductor.attribute_for_weighting = :conversions
+      Conductor::Experiment.pick('a_group', ["a", "b", "c"])
+      weights_c = Conductor::Experiment::Weight.all.map(&:weight).sort
+      
+      # since one is using conversion_value and the other is using conversions, they two weight arrays should be different
+      assert_equal :conversions, Conductor.attribute_for_weighting
+      assert_not_equal weights_cv, weights_c
+    end
+  end  
 
 
   private
