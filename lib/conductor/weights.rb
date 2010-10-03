@@ -53,7 +53,7 @@ class Conductor
           group_rows.group_by(&:alternative).each do |alternative_name, alternatives|
             days_ago = compute_days_ago(alternatives)
 
-            if days_ago >= Conductor.minimum_launch_days
+            if days_ago >= Conductor.equalization_period
               data << {:name => alternative_name, :weight => (weighted_moving_avg[alternative_name] / total)}
             else
               recently_launched << {:name => alternative_name, :days_ago => days_ago}
@@ -88,8 +88,8 @@ class Conductor
           # slowly lowers its power until the launch period is over
           max_weight = 1 if data.empty?
           recently_launched.each do |alternative|
-            handicap = (alternative[:days_ago].to_f / Conductor.minimum_launch_days)
-            launch_window = (Conductor.minimum_launch_days - alternative[:days_ago]) if Conductor.minimum_launch_days > alternative[:days_ago]
+            handicap = (alternative[:days_ago].to_f / Conductor.equalization_period)
+            launch_window = (Conductor.equalization_period - alternative[:days_ago]) if Conductor.equalization_period > alternative[:days_ago]
             Conductor.log("Handicap for #{alternative[:name]} is #{handicap} (#{alternative[:days_ago]} days ago)")
             data << {:name => alternative[:name], :weight => max_weight * MAX_WEIGHTING_FACTOR * (1 - handicap), :launch_window => launch_window}
           end
