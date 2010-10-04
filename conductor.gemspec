@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{conductor}
-  s.version = "0.7.0"
+  s.version = "0.8.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Noctivity"]
@@ -37,6 +37,7 @@ Gem::Specification.new do |s|
      "lib/conductor/roll_up.rb",
      "lib/conductor/views/dashboard/_current_weights.html.haml",
      "lib/conductor/views/dashboard/_daily_stats.html.haml",
+     "lib/conductor/views/dashboard/_group_stats.html.haml",
      "lib/conductor/views/dashboard/_top_nav.html.haml",
      "lib/conductor/views/dashboard/_weight_history.html.haml",
      "lib/conductor/views/dashboard/index.html.haml",

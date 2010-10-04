@@ -1,0 +1,23 @@
+%a{:name => "group_stats"}
+%h2 Experiment Statistics
+- @dailies.group_by(&:group_name).each do |group_name, group|
+  .group
+    %fieldset
+      %legend= group_name
+      %table
+        %tr
+          %th Alternative
+          %th Views
+          %th Conversions
+          %th Value
+          %th Value per Conv
+          %th Weight
+        - group.group_by(&:alternative).sort.each do |alternative_name, alternative_data|
+          %tr
+            %td.name= alternative_name
+            %td.views= alternative_data.sum_it(:views)
+            %td.conversions= alternative_data.sum_it(:conversions)
+            %td.value= alternative_data.sum_it(:conversion_value)
+            %td.norm= ("%0.2f" % (alternative_data.sum_it(:conversion_value).to_f / alternative_data.sum_it(:conversions).to_f))
+            %td.weight
+              %b= get_weight(group_name, alternative_name)

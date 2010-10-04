@@ -22,13 +22,20 @@ class TestConductor < Test::Unit::TestCase
       x = Conductor.cache.read('testing')
       assert_equal x, 'value'
     end
-    
-    should "allow for the minimum_launch_days to be configurable" do
-      Conductor.days_till_weighting = 3
-      assert_equal(3, Conductor.minimum_launch_days)
+
+    should "allow for the equalization_period to be configurable" do
+      Conductor.equalization_period = 3
+      assert_equal(3, Conductor.equalization_period)
     end
-    
-    should "raise an error if an improper attribute is specified for @@attribute_for_weighting" do
+
+    should "raise an error if a non-numeric value, negative or 0 value is specified for the equalization_period" do
+      assert_raise(RuntimeError, LoadError) { Conductor.equalization_period = 'junk'}
+      assert_raise(RuntimeError, LoadError) { Conductor.equalization_period = -1.0}
+      assert_raise(RuntimeError, LoadError) { Conductor.equalization_period = 0}
+      assert_nothing_raised(RuntimeError, LoadError) { Conductor.equalization_period = 3}
+    end
+
+    should "raise an error if an improper attribute is specified for @attribute_for_weighting" do
       assert_raise(RuntimeError, LoadError) { Conductor.attribute_for_weighting = :random}
     end
 
@@ -133,7 +140,7 @@ class TestConductor < Test::Unit::TestCase
       assert Conductor::Experiment::Daily.all.detect {|x| x.views > 0}
       assert Conductor::Experiment::Daily.all.detect {|x| x.conversion_value > 0}
     end
-    
+
     should "correctly populate weighting table when selecting a value" do
       selected = Conductor::Experiment.pick('a_group', ["a", "b", "c"])
       assert_equal 3, Conductor::Experiment::Weight.count
@@ -141,48 +148,49 @@ class TestConductor < Test::Unit::TestCase
 
     should "pull weights from the cache" do
       Conductor::Experiment.pick('a_group', ["a", "b", "c"])
-      
-      (1..100).each do |x|
-        Conductor.identity = ActiveSupport::SecureRandom.hex(16)
-        Conductor::Experiment.pick('a_group', ["a", "b", "c"])
-      end
-      
-      # => if this works the history table should have only been updated one time not 101 so there should 
-      # => be three records (one for a, b and c)
-      assert_equal 3, Conductor::Experiment::History.count
-    end
-    
-    should "pull weights from the cache and then recreate weights when the alternative list changes" do
-      Conductor::Experiment.pick('a_group', ["a", "b", "c"])
-      
+
       (1..100).each do |x|
         Conductor.identity = ActiveSupport::SecureRandom.hex(16)
         Conductor::Experiment.pick('a_group', ["a", "b", "c"])
       end
 
-      Conductor.identity = ActiveSupport::SecureRandom.hex(16)      
+      # => if this works the history table should have only been updated one time not 101 so there should
+      # => be three records (one for a, b and c)
+      assert_equal 3, Conductor::Experiment::History.count
+    end
+
+    should "pull weights from the cache and then recreate weights when the alternative list changes" do
+      Conductor::Experiment.pick('a_group', ["a", "b", "c"])
+
+      (1..100).each do |x|
+        Conductor.identity = ActiveSupport::SecureRandom.hex(16)
+        Conductor::Experiment.pick('a_group', ["a", "b", "c"])
+      end
+
+      Conductor.identity = ActiveSupport::SecureRandom.hex(16)
       Conductor::Experiment.pick('a_group', ["a", "c"])
-      
-      # => if this works the history table should have only been updated one time not 101 so there should 
+
+      # => if this works the history table should have only been updated one time not 101 so there should
       # => be FIVE records (one for a, b and c and then one for a and c)
       assert_equal 5, Conductor::Experiment::History.count
     end
   end
 
   context "conductor" do
-    should "populate the weighting table with equal weights if all new options are launched" do
+    setup do
+      wipe
       seed_raw_data(100, 7)
-
-      # rollup
       Conductor::RollUp.process
+    end
 
+    should "populate the weighting table with equal weights if all new options are launched" do
       # hit after rollup to populare weight table
       Conductor.identity = ActiveSupport::SecureRandom.hex(16)
-      Conductor.days_till_weighting = 7
+      Conductor.equalization_period = 7
       selected = Conductor::Experiment.pick('a_group', ["a", "b", "c"])
 
       # each weight will be equal to 0.18
-      assert_equal 7, Conductor.minimum_launch_days
+      assert_equal 7, Conductor.equalization_period
       assert_equal 0.54, Conductor::Experiment::Weight.all.sum_it(:weight).to_f
     end
   end
@@ -234,7 +242,7 @@ class TestConductor < Test::Unit::TestCase
       assert_not_nil Conductor::Experiment::History.find(:all, :conditions => 'launch_window > 0')
     end
   end
-  
+
   context "conductor" do
     setup do
       seed_raw_data(500, 30)
@@ -243,6 +251,22 @@ class TestConductor < Test::Unit::TestCase
       Conductor::RollUp.process
     end
     
+    should "correctly calculate weights even if there are no conversions" do
+      Conductor::Experiment::Daily.update_all('conversion_value = 0.00, conversions = 0')
+      Conductor.identity = ActiveSupport::SecureRandom.hex(16)
+      
+      assert_nil Conductor::Experiment::Daily.all.detect {|x| x.conversions > 0 || x.conversion_value > 0}
+      assert_equal 3, Conductor::Experiment.weights('a_group', ["a", "b", "c"]).values.sum
+    end
+    
+    should "correctly calculate weights even if an alternative has no conversions" do
+      Conductor::Experiment::Daily.update_all('conversion_value = 0.00, conversions = 0', "alternative = 'a'")
+      Conductor.identity = ActiveSupport::SecureRandom.hex(16)
+
+      assert_nil Conductor::Experiment::Daily.find_all_by_alternative('a').detect {|x| x.conversions > 0 || x.conversion_value > 0}
+      assert_equal 0, Conductor::Experiment.weights('a_group', ["a", "b", "c"])['a']
+    end
+
     should "allow for the number of conversions to be used for weighting instead of conversion_value" do
       Conductor.identity = ActiveSupport::SecureRandom.hex(16)
       Conductor::Experiment.pick('a_group', ["a", "b", "c"])
@@ -252,12 +276,12 @@ class TestConductor < Test::Unit::TestCase
       Conductor.attribute_for_weighting = :conversions
       Conductor::Experiment.pick('a_group', ["a", "b", "c"])
       weights_c = Conductor::Experiment::Weight.all.map(&:weight).sort
-      
+
       # since one is using conversion_value and the other is using conversions, they two weight arrays should be different
       assert_equal :conversions, Conductor.attribute_for_weighting
       assert_not_equal weights_cv, weights_c
     end
-  end  
+  end
 
 
   private
