@@ -12,4 +12,7 @@
 
 class Conductor::Experiment::Weight < ActiveRecord::Base
   set_table_name "conductor_weighted_experiments"
+
+  named_scope :for_group, lambda { |group_name| { :conditions =>  ['group_name = ?',group_name] }}
+  named_scope :with_alternative, lambda { |alternative| { :conditions =>  ['alternative = ?',alternative] }}
 end
