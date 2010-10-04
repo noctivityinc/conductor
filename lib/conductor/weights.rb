@@ -24,6 +24,13 @@ class Conductor
         end
       end
 
+      # Computes the weights for a group based on the attribute for weighting and 
+      # activity for the last two weeks.
+      #
+      # If no conversions have taken place yet for a group, all alternatives are weighted 
+      # equally.
+      #
+      # TODO: add notification table and all notification if there are no conversions and we are out of the equalization period
       def compute(group_name, alternatives)
         # create the conditions after sanitizing sql.
         alternative_filter = alternatives.inject([]) {|res,x| res << "alternative = '#{Conductor.sanitize(x)}'"}.join(' OR ')
@@ -34,7 +41,7 @@ class Conductor
         unless group_rows.empty?
           Conductor::Experiment::Weight.delete_all(:group_name => group_name) # => remove all old data for group
           total = group_rows.sum_it(Conductor.attribute_for_weighting)
-          data = total ? compute_weights_for_group(group_name, group_rows, total) : assign_equal_weights(group_rows)
+          data = total > 0 ? compute_weights_for_group(group_name, group_rows, total) : assign_equal_weights(group_rows)
           update_weights_in_db(group_name, data)
         end
       end
@@ -53,7 +60,7 @@ class Conductor
           group_rows.group_by(&:alternative).each do |alternative_name, alternatives|
             days_ago = compute_days_ago(alternatives)
 
-            if days_ago >= Conductor.minimum_launch_days
+            if days_ago >= Conductor.equalization_period
               data << {:name => alternative_name, :weight => (weighted_moving_avg[alternative_name] / total)}
             else
               recently_launched << {:name => alternative_name, :days_ago => days_ago}
@@ -88,8 +95,8 @@ class Conductor
           # slowly lowers its power until the launch period is over
           max_weight = 1 if data.empty?
           recently_launched.each do |alternative|
-            handicap = (alternative[:days_ago].to_f / Conductor.minimum_launch_days)
-            launch_window = (Conductor.minimum_launch_days - alternative[:days_ago]) if Conductor.minimum_launch_days > alternative[:days_ago]
+            handicap = (alternative[:days_ago].to_f / Conductor.equalization_period)
+            launch_window = (Conductor.equalization_period - alternative[:days_ago]) if Conductor.equalization_period > alternative[:days_ago]
             Conductor.log("Handicap for #{alternative[:name]} is #{handicap} (#{alternative[:days_ago]} days ago)")
             data << {:name => alternative[:name], :weight => max_weight * MAX_WEIGHTING_FACTOR * (1 - handicap), :launch_window => launch_window}
           end
