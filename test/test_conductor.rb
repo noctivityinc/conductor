@@ -250,6 +250,22 @@ class TestConductor < Test::Unit::TestCase
       # rollup
       Conductor::RollUp.process
     end
+    
+    should "correctly calculate weights even if there are no conversions" do
+      Conductor::Experiment::Daily.update_all('conversion_value = 0.00, conversions = 0')
+      Conductor.identity = ActiveSupport::SecureRandom.hex(16)
+      
+      assert_nil Conductor::Experiment::Daily.all.detect {|x| x.conversions > 0 || x.conversion_value > 0}
+      assert_equal 3, Conductor::Experiment.weights('a_group', ["a", "b", "c"]).values.sum
+    end
+    
+    should "correctly calculate weights even if an alternative has no conversions" do
+      Conductor::Experiment::Daily.update_all('conversion_value = 0.00, conversions = 0', "alternative = 'a'")
+      Conductor.identity = ActiveSupport::SecureRandom.hex(16)
+
+      assert_nil Conductor::Experiment::Daily.find_all_by_alternative('a').detect {|x| x.conversions > 0 || x.conversion_value > 0}
+      assert_equal 0, Conductor::Experiment.weights('a_group', ["a", "b", "c"])['a']
+    end
 
     should "allow for the number of conversions to be used for weighting instead of conversion_value" do
       Conductor.identity = ActiveSupport::SecureRandom.hex(16)

@@ -24,6 +24,13 @@ class Conductor
         end
       end
 
+      # Computes the weights for a group based on the attribute for weighting and 
+      # activity for the last two weeks.
+      #
+      # If no conversions have taken place yet for a group, all alternatives are weighted 
+      # equally.
+      #
+      # TODO: add notification table and all notification if there are no conversions and we are out of the equalization period
       def compute(group_name, alternatives)
         # create the conditions after sanitizing sql.
         alternative_filter = alternatives.inject([]) {|res,x| res << "alternative = '#{Conductor.sanitize(x)}'"}.join(' OR ')
@@ -34,7 +41,7 @@ class Conductor
         unless group_rows.empty?
           Conductor::Experiment::Weight.delete_all(:group_name => group_name) # => remove all old data for group
           total = group_rows.sum_it(Conductor.attribute_for_weighting)
-          data = total ? compute_weights_for_group(group_name, group_rows, total) : assign_equal_weights(group_rows)
+          data = total > 0 ? compute_weights_for_group(group_name, group_rows, total) : assign_equal_weights(group_rows)
           update_weights_in_db(group_name, data)
         end
       end
