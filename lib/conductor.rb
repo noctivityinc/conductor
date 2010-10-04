@@ -32,6 +32,19 @@ class Conductor
       return (@conductor_identity || ActiveSupport::SecureRandom.hex(16))
     end
     
+    # The number of days to include when calculating weights
+    # The inclusion period MUST be higher than then equalization period
+    # The default is 14 days
+    def inclusion_period=(value)
+      raise "Conductor.inclusion_period must be a positive number > 0" unless value.is_a?(Numeric) && value > 0
+      raise "Conductor.inclusion_period must be greater than the equalization period" if value < equalization_period
+      @inclusion_period = value
+    end
+    
+    def inclusion_period
+      return (@inclusion_period || 14)
+    end
+    
     # The equalization period is the initial amount of time, in days, that conductor 
     # should apply the max_weighting_factor towards a new alternative to ensure 
     # that it receives a far shot of performing.

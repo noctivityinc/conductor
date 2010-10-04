@@ -10,6 +10,11 @@ module DashboardHelper
     return Gchart.pie(:data => data, :legend => legend, :size => '600x200')
   end
   
+  def get_weight(group_name, alternative_name)
+    itm = Conductor::Experiment::Weight.for_group(group_name).with_alternative(alternative_name)
+    return itm.first.weight if itm &&  itm.first
+  end
+  
   def daily_stats(group_name, group)
     data = []
     legend = []
