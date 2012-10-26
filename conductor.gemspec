@@ -13,6 +13,8 @@ Gem::Specification.new do |s|
   s.email = 'jlippiner@noctivity.com'
   s.summary = "lets you just try things while always maximizing towards a goal (e.g. purchase, signups, etc)"
 
+  s.rubyforge_project = "conductor"
+
   s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.rdoc"]
   s.test_files = Dir["test/**/*"]
 
