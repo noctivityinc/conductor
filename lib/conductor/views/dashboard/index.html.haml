@@ -1,0 +1,29 @@
+!!!
+%html{ :xmlns => "http://www.w3.org/1999/xhtml" }
+  %head
+    %meta{ :content => "text/html; charset=utf-8", "http-equiv" => "Content-Type" }
+    %title
+      = h(yield(:title) || "Conductor Statistic as of #{Time.now}") 
+    = javascript_include_tag 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'
+    = stylesheet_link_tag 'conductor', :media => "all"
+    
+    :javascript
+      $(document).ready(function() {
+        $('.toggle_table').click(function() {
+          $(this).parent().find('table').toggle();
+        });
+      });
+      
+  %body
+    #conductor_dashboard
+      .title
+        %h1 Conductor Statistics
+        .generated= "Generated on #{Time.now}"
+
+      .top_nav= render :file => 'dashboard/_top_nav'
+      #weights= render :file => 'dashboard/_current_weights'
+      #group_stats= render :file => 'dashboard/_group_stats'
+      #dailies= render :file => 'dashboard/_daily_stats'
+      #history= render :file => 'dashboard/_weight_history'
+
+              

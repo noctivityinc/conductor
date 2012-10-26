@@ -1,0 +1,22 @@
+%a{:name => "daily_stats"}
+%h2 Experiment Statistics
+- @dailies.group_by(&:group_name).each do |group_name, group|
+  .group
+    %fieldset
+      %legend= group_name
+      .chart= image_tag daily_stats(group_name, group)
+      .toggle_table (table)                
+      %table
+        %tr
+          %th Date
+          %th Alternative
+          %th Views
+          %th Conversions
+          %th Value
+        - group.sort_by(&:activity_date).reverse.each do |row|
+          %tr
+            %td.date= row.activity_date
+            %td.name= row.alternative
+            %td.views= row.views
+            %td.conversions= row.conversions
+            %td.value= row.conversion_value
