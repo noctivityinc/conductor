@@ -1,4 +1,72 @@
-/*
-  Place all the styles related to the matching controller here.
-  They will automatically be included in application.css.
-*/
+#conductor_dashboard {
+  font-size: 12px;
+  font-family: 'Gill Sans';
+}
+
+#conductor_dashboard .title h1 {
+  margin-bottom: 0px;
+}
+
+#conductor_dashboard .title .generated {
+  font-size: 1.25em;
+  padding-left: 1em;
+}
+
+#conductor_dashboard .top_nav {
+  margin: 2em 0em;
+}
+
+#conductor_dashboard .top_nav .nav {
+  display: inline;
+  border-right: 1px solid black;
+  padding: .50em;
+}
+
+#conductor_dashboard .top_nav .last {
+  display: inline;
+  border-right: none;
+  padding: .25em;
+}
+
+#conductor_dashboard fieldset {
+  border-left: none;
+  border-right: none;
+  border-bottom: 1px dotted #CCCCCC;
+}
+
+#conductor_dashboard fieldset legend {
+  padding: 0px 10px;
+}
+
+
+#conductor_dashboard #weights .group table {
+  display: none;
+}
+
+#conductor_dashboard #dailies .group table {
+  display: none;
+}
+
+#conductor_dashboard #history .group table {
+  display: none;
+}
+
+
+#conductor_dashboard .toggle_table {
+  font-size: .80;
+  font-decoration: underline;
+  color: blue;
+  text-align: right;
+  padding: 1em .5em;
+}
+
+#conductor_dashboard table {
+  margin-top: 1em;
+}
+
+#conductor_dashboard table tr th {
+  background: #CCCCCC;
+  font-family: "Warnock Pro", "Goudy Old Style", "Palatino", "Book Antiqua", Georgia, serif;
+  font-style: italic;
+  font-size: 1.25em;
+}
