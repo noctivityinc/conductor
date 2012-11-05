@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    conductor (0.9.3)
+    conductor (0.9.4)
       googlecharts
       haml
       rails (~> 3.2.8)

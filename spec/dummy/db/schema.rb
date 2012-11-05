@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121010175921) do
+ActiveRecord::Schema.define(:version => 20121105213827) do
 
   create_table "conductor_daily_experiments", :force => true do |t|
     t.date    "activity_date"
@@ -34,6 +34,10 @@ ActiveRecord::Schema.define(:version => 20121010175921) do
     t.datetime "updated_at"
     t.string   "goal"
   end
+
+  add_index "conductor_raw_experiments", ["created_at"], :name => "index_conductor_raw_experiments_on_created_at"
+  add_index "conductor_raw_experiments", ["identity_id", "goal"], :name => "ndx_identity_goal"
+  add_index "conductor_raw_experiments", ["identity_id"], :name => "index_conductor_raw_experiments_on_identity_id"
 
   create_table "conductor_weight_histories", :force => true do |t|
     t.string   "group_name"
